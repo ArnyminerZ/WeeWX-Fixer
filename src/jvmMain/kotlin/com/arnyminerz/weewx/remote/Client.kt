@@ -1,13 +1,18 @@
 package com.arnyminerz.weewx.remote
 
+import com.arnyminerz.weewx.data.inside
 import com.jcraft.jsch.Channel
 import com.jcraft.jsch.ChannelExec
 import com.jcraft.jsch.ChannelSftp
 import com.jcraft.jsch.JSch
 import com.jcraft.jsch.JSchException
 import com.jcraft.jsch.Session
+import com.jcraft.jsch.SftpProgressMonitor
 import kotlinx.coroutines.delay
 import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.InputStream
+import java.io.InputStreamReader
 import java.net.ConnectException
 
 class Client(
@@ -47,16 +52,27 @@ class Client(
     /**
      * Initializes the connection with the server, performs the actions in [block], and closes the connection.
      */
-    suspend fun use(exceptionHandler: (suspend (Exception) -> Unit)? = null, block: suspend Client.() -> Unit) {
+    suspend fun use(exceptionHandler: suspend (Exception) -> Unit, block: suspend Client.() -> Unit) {
         try {
             connect()
             block()
         } catch (e: Exception) {
-            exceptionHandler?.invoke(e)
+            exceptionHandler(e)
         } finally {
             disconnect()
         }
     }
+
+    /**
+     * Initializes the connection with the server, performs the actions in [block], and closes the connection.
+     */
+    suspend fun <R> use(block: suspend Client.() -> R): R =
+        try {
+            connect()
+            block()
+        } finally {
+            disconnect()
+        }
 
     @Suppress("UNCHECKED_CAST")
     private suspend fun <T: Channel, R> openChannel(
@@ -96,20 +112,72 @@ class Client(
      * @throws JSchException If there was an error while running the command.
      */
     suspend fun run(command: String): String {
-        val responseStream = ByteArrayOutputStream()
-
+        println("Running command \"$command\" on $hostname:$port...")
+        var stream: InputStreamReader? = null
         return openChannel<ChannelExec, String>("exec", {
             setCommand(command)
-            outputStream = responseStream
+            stream = inputStream.reader()
+            setErrStream(System.err, true)
         }) {
-            String(responseStream.toByteArray())
+            val buffer = CharArray(128)
+            val output = StringBuilder()
+            var read: Int? = stream?.read(buffer, 0, buffer.size)
+            while (read != null && read >= 0) {
+                output.appendRange(buffer, 0, read)
+                read = stream?.read(buffer, 0, buffer.size)
+            }
+            stream?.close()
+
+            // Return the collected output, removing trailing line breaks
+            output.toString().trimEnd('\n')
         }
     }
 
     private suspend fun <R> sftp(block: suspend ChannelSftp.() -> R): R = openChannel("sftp", block = block)
 
-    suspend fun download(path: String) = sftp {
+    suspend fun download(path: String, target: File, progress: ProgressCallback? = null) = sftp {
         println("Fetching $path from $hostname:$port")
-        get(path)
+        get(path, target.absolutePath, object : SftpProgressMonitor {
+            private lateinit var range: LongRange
+
+            private var accumulator: Long = 0
+
+            override fun init(op: Int, src: String?, dest: String?, max: Long) {
+                range = 0L until max
+                println("Started download for $path: total = ${range.last}")
+                progress?.callback(0L inside range)
+            }
+
+            override fun count(count: Long): Boolean {
+                accumulator += count
+                println("Download progress for $path: $accumulator / ${range.last}")
+                return progress?.callback(accumulator inside range) ?: true
+            }
+
+            override fun end() { progress?.callback(null) }
+        })
+    }
+
+    suspend fun upload(source: File, target: String, progress: ProgressCallback? = null) = sftp {
+        println("Uploading $source into $target of $hostname:$port...")
+        put(source.absolutePath, target, object : SftpProgressMonitor {
+            private lateinit var range: LongRange
+
+            private var accumulator: Long = 0
+
+            override fun init(op: Int, src: String?, dest: String?, max: Long) {
+                range = 0L until max
+                println("Started upload for $source: total = ${range.last}")
+                progress?.callback(0L inside range)
+            }
+
+            override fun count(count: Long): Boolean {
+                accumulator += count
+                println("Upload progress for $source: $accumulator / ${range.last}")
+                return progress?.callback(accumulator inside range) ?: true
+            }
+
+            override fun end() { progress?.callback(null) }
+        })
     }
 }

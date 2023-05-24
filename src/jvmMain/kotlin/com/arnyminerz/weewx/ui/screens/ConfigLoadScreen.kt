@@ -1,4 +1,4 @@
-package com.arnyminerz.weewx.ui
+package com.arnyminerz.weewx.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.desktop.ui.tooling.preview.Preview
@@ -78,34 +78,7 @@ fun ConfigLoadScreen() {
                 }
             }
 
-            instance?.let { inst ->
-                Column {
-                    Row(Modifier.fillMaxWidth()) {
-                        OutlinedButton(
-                            modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
-                            enabled = !loading,
-                            onClick = { Desktop.getDesktop().open(inst.instanceDirectory) }
-                        ) { Text("Obrir directori") }
-
-                        OutlinedButton(
-                            modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
-                            enabled = !loading,
-                            onClick = {
-                                loading = true
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    inst.downloadDatabase(
-                                        File(inst.instanceDirectory, "database.db")
-                                    )
-                                    withContext(Dispatchers.Main) {
-                                        loading = false
-                                        snackbarHostState.showSnackbar("Base de dades descarregada")
-                                    }
-                                }
-                            }
-                        ) { Text("Descarregar db") }
-                    }
-                }
-            }
+            instance?.let { i -> InstanceScreen(i, snackbarHostState, loading) { loading = it } }
         }
     }
 }
