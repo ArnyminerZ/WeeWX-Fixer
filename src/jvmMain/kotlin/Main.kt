@@ -1,5 +1,6 @@
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.runtime.*
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.arnyminerz.weewx.ui.screens.ConfigLoadScreen
@@ -16,7 +17,8 @@ fun App() {
 fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
-        title = "WeeWX Fixer"
+        title = "WeeWX Fixer",
+        icon = painterResource("Weewx.png")
     ) {
         App()
     }
