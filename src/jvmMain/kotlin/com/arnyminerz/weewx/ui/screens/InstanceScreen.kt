@@ -8,6 +8,7 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -181,7 +182,7 @@ fun ColumnScope.InstanceScreen(
             text = "Ara WeeWX ha de tornar a processar les dades, per a incloure les teues modificacions. Per a que aquest procès dure menys, pots establir un rang de dates, per a evitar recalcular tot l'historial. Tot i això, aquest procés pot tardar una bona estona.",
             style = MaterialTheme.typography.bodyLarge
         )
-        Row {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             val dateFormatter = remember { SimpleDateFormat("yyyy-MM-dd") }
             var startDate by remember { mutableStateOf("") }
             var endDate by remember { mutableStateOf("") }
