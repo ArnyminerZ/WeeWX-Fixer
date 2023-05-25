@@ -4,14 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="edd526ec-f4db-4c44-a53b-d9e70d07153c" name="Changes" comment="Disabled MacOS">
-      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/jvmMain/resources/Weewx.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/artifacts/weewx_jvm_1_0_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/weewx_jvm_1_0_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="edd526ec-f4db-4c44-a53b-d9e70d07153c" name="Changes" comment="Environment">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gradle.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gradle.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -216,7 +210,7 @@
       <option name="presentableId" value="Default" />
       <updated>1684963533133</updated>
       <workItem from="1684963534634" duration="1009000" />
-      <workItem from="1685002064243" duration="1383000" />
+      <workItem from="1685002064243" duration="1532000" />
     </task>
     <task id="LOCAL-00001" summary="Workflow">
       <created>1684963763218</created>
@@ -267,7 +261,28 @@
       <option name="project" value="LOCAL" />
       <updated>1685003133735</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Updated icon">
+      <created>1685003557317</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1685003557317</updated>
+    </task>
+    <task id="LOCAL-00009" summary="README">
+      <created>1685003566256</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1685003566256</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Environment">
+      <created>1685003576263</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1685003576263</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -281,6 +296,9 @@
     <MESSAGE value="Added icon" />
     <MESSAGE value="Centered elements" />
     <MESSAGE value="Disabled MacOS" />
-    <option name="LAST_COMMIT_MESSAGE" value="Disabled MacOS" />
+    <MESSAGE value="Updated icon" />
+    <MESSAGE value="README" />
+    <MESSAGE value="Environment" />
+    <option name="LAST_COMMIT_MESSAGE" value="Environment" />
   </component>
 </project>
