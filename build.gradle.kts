@@ -43,9 +43,15 @@ compose.desktop {
     application {
         mainClass = "MainKt"
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "weewx"
+            targetFormats(TargetFormat.Msi, TargetFormat.Deb)
+            packageName = "WeeWX Fixer"
             packageVersion = project.properties["weewx-fixer.version"] as String?
+            windows {
+                iconFile.set(project.file("src/jvmMain/resources/Weewx.png"))
+            }
+            linux {
+                iconFile.set(project.file("src/jvmMain/resources/Weewx.png"))
+            }
         }
     }
 }
