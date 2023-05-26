@@ -35,6 +35,7 @@ kotlin {
                 implementation("com.darkrockstudios:mpfilepicker:1.1.0")
                 implementation("org.json:json:20230227")
                 implementation("com.vdurmont:semver4j:3.1.0")
+                implementation("org.jsoup:jsoup:1.16.1")
             }
         }
         val jvmTest by getting
