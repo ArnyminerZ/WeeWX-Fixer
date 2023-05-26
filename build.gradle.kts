@@ -48,9 +48,18 @@ compose.desktop {
             packageVersion = project.properties["weewx-fixer.version"] as String?
             windows {
                 iconFile.set(project.file("src/jvmMain/resources/Weewx.png"))
+                dirChooser = true
+                perUserInstall = true
+                menuGroup = "Weather"
+                upgradeUuid = "cbc23044-85cc-4ef7-b52f-515f5704955f" // https://www.guidgen.com/
             }
             linux {
                 iconFile.set(project.file("src/jvmMain/resources/Weewx.png"))
+                debMaintainer = "arnyminerz@proton.me"
+                menuGroup = "weather"
+                appRelease = "1"
+                appCategory = "tools"
+                rpmLicenseType = "Apache-2.0"
             }
         }
     }
