@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="edd526ec-f4db-4c44-a53b-d9e70d07153c" name="Changes" comment="New version check">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/jvmMain/kotlin/com/arnyminerz/weewx/configuration/Instance.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/arnyminerz/weewx/configuration/Instance.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/jvmMain/kotlin/com/arnyminerz/weewx/ui/screens/InstanceScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/arnyminerz/weewx/ui/screens/InstanceScreen.kt" afterDir="false" />
+    <list default="true" id="edd526ec-f4db-4c44-a53b-d9e70d07153c" name="Changes" comment="Added database removal">
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -211,7 +209,7 @@
       <workItem from="1684963534634" duration="1009000" />
       <workItem from="1685002064243" duration="1532000" />
       <workItem from="1685085910026" duration="4365000" />
-      <workItem from="1685090322617" duration="1280000" />
+      <workItem from="1685090322617" duration="1470000" />
     </task>
     <task id="LOCAL-00001" summary="Workflow">
       <created>1684963763218</created>
@@ -304,7 +302,14 @@
       <option name="project" value="LOCAL" />
       <updated>1685090820042</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Added database removal">
+      <created>1685091725043</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1685091725043</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -324,6 +329,7 @@
     <MESSAGE value="Version bump" />
     <MESSAGE value="Configured installers" />
     <MESSAGE value="New version check" />
-    <option name="LAST_COMMIT_MESSAGE" value="New version check" />
+    <MESSAGE value="Added database removal" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added database removal" />
   </component>
 </project>

@@ -49,7 +49,7 @@ compose.desktop {
             packageName = "WeeWX Fixer"
             packageVersion = project.properties["weewx-fixer.version"] as String?
             windows {
-                iconFile.set(project.file("src/jvmMain/resources/Weewx.png"))
+                iconFile.set(project.file("src/jvmMain/resources/Weewx.ico"))
                 dirChooser = true
                 perUserInstall = true
                 menuGroup = "Weather"
