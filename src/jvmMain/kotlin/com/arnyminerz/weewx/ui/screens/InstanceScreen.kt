@@ -46,9 +46,9 @@ fun ColumnScope.InstanceScreen(
     val databaseHash by instance.databaseHash
     val databaseFileHash by instance.databaseFileHash
 
-    val isWeewxRunning by instance.isWeewxRunning
-    val weewxVersion by instance.weewxVersion
-    val latestWeewxRelease by WeeWX.latestRelease
+    val isWeeWXRunning by instance.isWeewxRunning
+    val weeWXVersion by instance.weewxVersion
+    val latestWeeWXRelease by WeeWX.latestRelease
 
     val serverDistroUnsupported by instance.isServerDistroUnsupported
 
@@ -56,7 +56,7 @@ fun ColumnScope.InstanceScreen(
 
     LaunchedEffect(Unit) {
         doAsync {
-            instance.updateWeewxStatus()
+            instance.updateWeeWXStatus()
             instance.updateServerData()
         }
     }
@@ -89,9 +89,9 @@ fun ColumnScope.InstanceScreen(
             ) { Text("Detindre servei") }
             IconButton(
                 enabled = !isLoading && !isInstanceLoading,
-                onClick = async { instance.updateWeewxStatus() }
+                onClick = async { instance.updateWeeWXStatus() }
             ) {
-                isWeewxRunning?.let {
+                isWeeWXRunning?.let {
                     Icon(if (it) Icons.Rounded.Done else Icons.Rounded.Close, null)
                 } ?: CircularProgressIndicator()
             }
@@ -249,9 +249,9 @@ fun ColumnScope.InstanceScreen(
             ) { Text("Arrancar servei") }
             IconButton(
                 enabled = !isLoading && !isInstanceLoading,
-                onClick = async { instance.updateWeewxStatus() }
+                onClick = async { instance.updateWeeWXStatus() }
             ) {
-                isWeewxRunning?.let {
+                isWeeWXRunning?.let {
                     Icon(if (it) Icons.Rounded.Done else Icons.Rounded.Close, null)
                 } ?: CircularProgressIndicator()
             }
@@ -263,8 +263,8 @@ fun ColumnScope.InstanceScreen(
         style = MaterialTheme.typography.labelSmall,
         modifier = Modifier.fillMaxWidth().padding(4.dp)
     )
-    val latestReleaseStr = latestWeewxRelease?.version?.let { latest ->
-        val current = weewxVersion?.semVer
+    val latestReleaseStr = latestWeeWXRelease?.version?.let { latest ->
+        val current = weeWXVersion?.semVer
         if (current != null)
             if (latest > current)
                 " (Nova versió disponible)"
@@ -273,13 +273,13 @@ fun ColumnScope.InstanceScreen(
         else
             ""
     }
-    val weewxRunningString = when (isWeewxRunning) {
+    val weewxRunningString = when (isWeeWXRunning) {
         true -> " - En execució"
         false -> " - Detingut"
         else -> ""
     }
     Text(
-        text = "Versió de WeeWX: ${weewxVersion ?: "Carregant..."}${latestReleaseStr}${weewxRunningString}",
+        text = "Versió de WeeWX: ${weeWXVersion ?: "Carregant..."}${latestReleaseStr}${weewxRunningString}",
         style = MaterialTheme.typography.labelSmall,
         modifier = Modifier.fillMaxWidth().padding(4.dp)
     )
