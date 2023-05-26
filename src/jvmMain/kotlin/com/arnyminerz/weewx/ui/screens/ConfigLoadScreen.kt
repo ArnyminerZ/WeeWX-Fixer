@@ -4,6 +4,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -12,6 +14,8 @@ import androidx.compose.ui.unit.dp
 import com.arnyminerz.weewx.configuration.AppConfigProvider
 import com.arnyminerz.weewx.configuration.Config
 import com.arnyminerz.weewx.ui.reusable.Spinner
+import com.arnyminerz.weewx.updates.UpdateChecker
+import com.arnyminerz.weewx.utils.DesktopUtils
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +24,7 @@ import kotlinx.coroutines.withContext
 import java.awt.Desktop
 import java.io.File
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun ConfigLoadScreen() {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -45,6 +49,20 @@ fun ConfigLoadScreen() {
         } catch (e: IllegalArgumentException) {
             scope.launch { snackbarHostState.showSnackbar("Fitxer de configuració invàlid.\nError: ${e.message}") }
         }
+    }
+
+    val newVersionAvailable by UpdateChecker.newVersionAvailable
+    newVersionAvailable?.let { version ->
+        AlertDialog(
+            onDismissRequest = {},
+            confirmButton = {
+                TextButton(onClick = { DesktopUtils.browse(version.url) }) {
+                    Text("Descarregar")
+                }
+            },
+            title = { Text("Nova versió disponible") },
+            text = { Text("Hi ha una nova versió de l'app disponible. Per favor, actualitza.") }
+        )
     }
 
     Scaffold(
