@@ -4,18 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="edd526ec-f4db-4c44-a53b-d9e70d07153c" name="Changes" comment="Configured installers">
-      <change afterPath="$PROJECT_DIR$/.idea/artifacts/weewx_jvm_1_0_2.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/runConfigurations/Run_Application.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/arnyminerz/weewx/serialization/JsonSerializer.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/arnyminerz/weewx/updates/GithubLatestRelease.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/arnyminerz/weewx/updates/UpdateChecker.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/arnyminerz/weewx/utils/StringUtils.kt" afterDir="false" />
+    <list default="true" id="edd526ec-f4db-4c44-a53b-d9e70d07153c" name="Changes" comment="New version check">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/jvmMain/kotlin/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/Main.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/jvmMain/kotlin/com/arnyminerz/weewx/ui/screens/ConfigLoadScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/arnyminerz/weewx/ui/screens/ConfigLoadScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/jvmMain/kotlin/com/arnyminerz/weewx/utils/DesktopUtils.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/arnyminerz/weewx/utils/DesktopUtils.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/jvmMain/kotlin/com/arnyminerz/weewx/configuration/Instance.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/arnyminerz/weewx/configuration/Instance.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/jvmMain/kotlin/com/arnyminerz/weewx/ui/screens/InstanceScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/arnyminerz/weewx/ui/screens/InstanceScreen.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -219,7 +211,7 @@
       <workItem from="1684963534634" duration="1009000" />
       <workItem from="1685002064243" duration="1532000" />
       <workItem from="1685085910026" duration="4365000" />
-      <workItem from="1685090322617" duration="464000" />
+      <workItem from="1685090322617" duration="1280000" />
     </task>
     <task id="LOCAL-00001" summary="Workflow">
       <created>1684963763218</created>
@@ -305,7 +297,14 @@
       <option name="project" value="LOCAL" />
       <updated>1685086935627</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="New version check">
+      <created>1685090820042</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1685090820042</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -324,6 +323,7 @@
     <MESSAGE value="Environment" />
     <MESSAGE value="Version bump" />
     <MESSAGE value="Configured installers" />
-    <option name="LAST_COMMIT_MESSAGE" value="Configured installers" />
+    <MESSAGE value="New version check" />
+    <option name="LAST_COMMIT_MESSAGE" value="New version check" />
   </component>
 </project>

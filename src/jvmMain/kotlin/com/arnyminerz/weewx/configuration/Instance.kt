@@ -53,7 +53,7 @@ class Instance(file: File): Config(file) {
         databaseFile.toPath().watchForChanges {
             println("Database ($databaseFile) updated! Refreshing checksum...")
             databaseExistsMutable.value = exists()
-            databaseFileHashMutable.value = databaseFile.checksum()
+            databaseFileHashMutable.value = databaseFile.takeIf { it.exists() }?.checksum()
             databaseHashMutable.value = checksumFile.takeIf { it.exists() }?.readText()
         }
     }

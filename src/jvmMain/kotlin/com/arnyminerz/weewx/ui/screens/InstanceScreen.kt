@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material3.*
@@ -147,6 +148,10 @@ fun ColumnScope.InstanceScreen(
                     }
                 }
             ) { Text("Obrir db") }
+
+            IconButton(
+                onClick = { instance.databaseFile.delete() }
+            ) { Icon(Icons.Outlined.DeleteForever, null) }
         }
 
         Text(
@@ -249,7 +254,7 @@ fun ColumnScope.InstanceScreen(
     }
 
     Text(
-        text = "Hash server: $databaseHash\nHash actual: $databaseFileHash",
+        text = "Hash server: ${databaseHash ?: "cap"}\nHash actual: ${databaseFileHash ?: "cap"}",
         style = MaterialTheme.typography.labelSmall,
         modifier = Modifier.fillMaxWidth().padding(4.dp)
     )
