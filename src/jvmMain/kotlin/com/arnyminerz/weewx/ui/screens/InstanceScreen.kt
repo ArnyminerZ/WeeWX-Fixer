@@ -3,6 +3,7 @@ package com.arnyminerz.weewx.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.rounded.Close
@@ -19,6 +20,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.arnyminerz.weewx.configuration.Instance
 import com.arnyminerz.weewx.ui.dialog.ProgressDialog
+import com.arnyminerz.weewx.ui.dialog.UnsupportedDistroDialog
 import com.arnyminerz.weewx.updates.WeeWX
 import com.arnyminerz.weewx.utils.*
 import kotlinx.coroutines.Dispatchers
@@ -26,13 +28,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun ColumnScope.InstanceScreen(
     instance: Instance,
     snackbarHostState: SnackbarHostState,
     isLoading: Boolean,
-    setLoading: (Boolean) -> Unit
+    setLoading: (Boolean) -> Unit,
+    onCloseRequested: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
 
@@ -47,10 +50,19 @@ fun ColumnScope.InstanceScreen(
     val weewxVersion by instance.weewxVersion
     val latestWeewxRelease by WeeWX.latestRelease
 
+    val serverDistroUnsupported by instance.isServerDistroUnsupported
+
     ProgressDialog(progress, "Carregant...")
 
     LaunchedEffect(Unit) {
-        doAsync { instance.updateWeewxStatus() }
+        doAsync {
+            instance.updateWeewxStatus()
+            instance.updateServerData()
+        }
+    }
+
+    serverDistroUnsupported?.let {
+        UnsupportedDistroDialog(it, onCloseRequested)
     }
 
     Column(

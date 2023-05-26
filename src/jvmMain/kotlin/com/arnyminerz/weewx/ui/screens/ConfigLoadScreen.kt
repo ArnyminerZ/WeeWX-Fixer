@@ -3,7 +3,10 @@ package com.arnyminerz.weewx.ui.screens
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.*
@@ -17,11 +20,7 @@ import com.arnyminerz.weewx.ui.reusable.Spinner
 import com.arnyminerz.weewx.updates.UpdateChecker
 import com.arnyminerz.weewx.utils.DesktopUtils
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.awt.Desktop
 import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
@@ -96,7 +95,7 @@ fun ConfigLoadScreen() {
                 }
             }
 
-            instance?.let { i -> InstanceScreen(i, snackbarHostState, loading) { loading = it } }
+            instance?.let { i -> InstanceScreen(i, snackbarHostState, loading, { loading = it }, { selectedInstanceIndex = -1 }) }
         }
     }
 }

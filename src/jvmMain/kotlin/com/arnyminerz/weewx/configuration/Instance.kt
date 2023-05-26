@@ -7,11 +7,10 @@ import com.arnyminerz.weewx.data.ValueMinMax
 import com.arnyminerz.weewx.data.inside
 import com.arnyminerz.weewx.remote.Client
 import com.arnyminerz.weewx.utils.checksum
-import com.arnyminerz.weewx.utils.ui
 import com.arnyminerz.weewx.utils.watchForChanges
 import java.io.File
 import java.text.SimpleDateFormat
-import java.util.Date
+import java.util.*
 import kotlin.io.path.exists
 
 class Instance(file: File): Config(file) {
@@ -51,6 +50,9 @@ class Instance(file: File): Config(file) {
 
     private val isLoadingMutable: MutableState<Boolean> = mutableStateOf(false)
     val isLoading: State<Boolean> get() = isLoadingMutable
+
+    private val isServerDistroUnsupportedMutable: MutableState<String?> = mutableStateOf(null)
+    val isServerDistroUnsupported: State<String?> get() = isServerDistroUnsupportedMutable
 
     init {
         databaseFile.toPath().watchForChanges {
@@ -134,6 +136,20 @@ class Instance(file: File): Config(file) {
         performOperation {
             weewxVersionMutable.value = run("wee_config --version")
             isWeewxRunningMutable.value = run("sudo systemctl is-active weewx") == "active"
+        }
+    }
+
+    /**
+     * Fetches data from the server to check compatibility among other things.
+     * @see isServerDistroUnsupported
+     */
+    suspend fun updateServerData() {
+        performOperation {
+            val osRelease = ReadonlyConfig(run("cat /etc/os-release"))
+            val idLike = osRelease["ID_LIKE"] ?: osRelease["ID"]
+            isServerDistroUnsupportedMutable.value = idLike.takeUnless {
+                it.equals("ubuntu", true) || it.equals("debian", true)
+            }
         }
     }
 
