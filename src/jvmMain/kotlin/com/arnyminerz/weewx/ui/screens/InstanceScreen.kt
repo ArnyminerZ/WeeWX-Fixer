@@ -3,6 +3,7 @@ package com.arnyminerz.weewx.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.rounded.Close
@@ -19,6 +20,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.arnyminerz.weewx.configuration.Instance
 import com.arnyminerz.weewx.ui.dialog.ProgressDialog
+import com.arnyminerz.weewx.ui.dialog.UnsupportedDistroDialog
 import com.arnyminerz.weewx.updates.WeeWX
 import com.arnyminerz.weewx.utils.*
 import kotlinx.coroutines.Dispatchers
@@ -26,13 +28,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun ColumnScope.InstanceScreen(
     instance: Instance,
     snackbarHostState: SnackbarHostState,
     isLoading: Boolean,
-    setLoading: (Boolean) -> Unit
+    setLoading: (Boolean) -> Unit,
+    onCloseRequested: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
 
@@ -43,14 +46,23 @@ fun ColumnScope.InstanceScreen(
     val databaseHash by instance.databaseHash
     val databaseFileHash by instance.databaseFileHash
 
-    val isWeewxRunning by instance.isWeewxRunning
-    val weewxVersion by instance.weewxVersion
-    val latestWeewxRelease by WeeWX.latestRelease
+    val isWeeWXRunning by instance.isWeewxRunning
+    val weeWXVersion by instance.weewxVersion
+    val latestWeeWXRelease by WeeWX.latestRelease
+
+    val serverDistroUnsupported by instance.isServerDistroUnsupported
 
     ProgressDialog(progress, "Carregant...")
 
     LaunchedEffect(Unit) {
-        doAsync { instance.updateWeewxStatus() }
+        doAsync {
+            instance.updateWeeWXStatus()
+            instance.updateServerData()
+        }
+    }
+
+    serverDistroUnsupported?.let {
+        UnsupportedDistroDialog(it, onCloseRequested)
     }
 
     Column(
@@ -77,9 +89,9 @@ fun ColumnScope.InstanceScreen(
             ) { Text("Detindre servei") }
             IconButton(
                 enabled = !isLoading && !isInstanceLoading,
-                onClick = async { instance.updateWeewxStatus() }
+                onClick = async { instance.updateWeeWXStatus() }
             ) {
-                isWeewxRunning?.let {
+                isWeeWXRunning?.let {
                     Icon(if (it) Icons.Rounded.Done else Icons.Rounded.Close, null)
                 } ?: CircularProgressIndicator()
             }
@@ -237,9 +249,9 @@ fun ColumnScope.InstanceScreen(
             ) { Text("Arrancar servei") }
             IconButton(
                 enabled = !isLoading && !isInstanceLoading,
-                onClick = async { instance.updateWeewxStatus() }
+                onClick = async { instance.updateWeeWXStatus() }
             ) {
-                isWeewxRunning?.let {
+                isWeeWXRunning?.let {
                     Icon(if (it) Icons.Rounded.Done else Icons.Rounded.Close, null)
                 } ?: CircularProgressIndicator()
             }
@@ -251,8 +263,8 @@ fun ColumnScope.InstanceScreen(
         style = MaterialTheme.typography.labelSmall,
         modifier = Modifier.fillMaxWidth().padding(4.dp)
     )
-    val latestReleaseStr = latestWeewxRelease?.version?.let { latest ->
-        val current = weewxVersion?.semVer
+    val latestReleaseStr = latestWeeWXRelease?.version?.let { latest ->
+        val current = weeWXVersion?.semVer
         if (current != null)
             if (latest > current)
                 " (Nova versió disponible)"
@@ -261,13 +273,13 @@ fun ColumnScope.InstanceScreen(
         else
             ""
     }
-    val weewxRunningString = when (isWeewxRunning) {
+    val weewxRunningString = when (isWeeWXRunning) {
         true -> " - En execució"
         false -> " - Detingut"
         else -> ""
     }
     Text(
-        text = "Versió de WeeWX: ${weewxVersion ?: "Carregant..."}${latestReleaseStr}${weewxRunningString}",
+        text = "Versió de WeeWX: ${weeWXVersion ?: "Carregant..."}${latestReleaseStr}${weewxRunningString}",
         style = MaterialTheme.typography.labelSmall,
         modifier = Modifier.fillMaxWidth().padding(4.dp)
     )

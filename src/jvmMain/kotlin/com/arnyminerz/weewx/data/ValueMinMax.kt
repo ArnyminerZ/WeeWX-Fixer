@@ -30,6 +30,10 @@ class LongValueMinMax(
     min: Long,
     max: Long
 ) : ValueMinMax<Long>(value, min, max) {
+    companion object {
+        val INDETERMINATE = 0L inside (0..0L)
+    }
+
     override fun Long.compareTo(b: Long): Int = compareTo(b)
 
     override val neutral: Long = 0L
