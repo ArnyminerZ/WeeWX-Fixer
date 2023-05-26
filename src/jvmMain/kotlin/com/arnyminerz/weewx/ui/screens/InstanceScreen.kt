@@ -19,21 +19,12 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.arnyminerz.weewx.configuration.Instance
 import com.arnyminerz.weewx.ui.dialog.ProgressDialog
-import com.arnyminerz.weewx.utils.DesktopUtils
-import com.arnyminerz.weewx.utils.async
-import com.arnyminerz.weewx.utils.doAsync
-import com.arnyminerz.weewx.utils.isValidDate
-import kotlinx.coroutines.CoroutineScope
+import com.arnyminerz.weewx.updates.WeeWX
+import com.arnyminerz.weewx.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.awt.Desktop
-import java.io.File
-import java.nio.file.StandardWatchEventKinds.*
-import java.nio.file.WatchKey
-import java.nio.file.WatchService
 import java.text.SimpleDateFormat
-import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,6 +45,7 @@ fun ColumnScope.InstanceScreen(
 
     val isWeewxRunning by instance.isWeewxRunning
     val weewxVersion by instance.weewxVersion
+    val latestWeewxRelease by WeeWX.latestRelease
 
     ProgressDialog(progress, "Carregant...")
 
@@ -259,8 +251,23 @@ fun ColumnScope.InstanceScreen(
         style = MaterialTheme.typography.labelSmall,
         modifier = Modifier.fillMaxWidth().padding(4.dp)
     )
+    val latestReleaseStr = latestWeewxRelease?.version?.let { latest ->
+        val current = weewxVersion?.semVer
+        if (current != null)
+            if (latest > current)
+                " (Nova versió disponible)"
+            else
+                " (Actualizada)"
+        else
+            ""
+    }
+    val weewxRunningString = when (isWeewxRunning) {
+        true -> " - En execució"
+        false -> " - Detingut"
+        else -> ""
+    }
     Text(
-        text = "Versió de WeeWX: ${weewxVersion ?: "Carregant..."}${if (isWeewxRunning == true) " (En execució)" else if (isWeewxRunning == false) " (Detingut)" else ""}",
+        text = "Versió de WeeWX: ${weewxVersion ?: "Carregant..."}${latestReleaseStr}${weewxRunningString}",
         style = MaterialTheme.typography.labelSmall,
         modifier = Modifier.fillMaxWidth().padding(4.dp)
     )
