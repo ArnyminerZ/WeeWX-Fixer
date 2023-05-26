@@ -6,6 +6,7 @@ import androidx.compose.ui.window.application
 import com.arnyminerz.weewx.ui.screens.ConfigLoadScreen
 import com.arnyminerz.weewx.ui.theme.AppTheme
 import com.arnyminerz.weewx.updates.UpdateChecker
+import com.arnyminerz.weewx.updates.WeeWX
 import com.arnyminerz.weewx.utils.doAsync
 
 @Composable
@@ -17,7 +18,10 @@ fun App() {
 }
 
 fun main() = application {
-    doAsync { UpdateChecker.checkForUpdates() }
+    doAsync {
+        UpdateChecker.checkForUpdates()
+        WeeWX.getReleasedVersions()
+    }
 
     Window(
         onCloseRequest = ::exitApplication,
