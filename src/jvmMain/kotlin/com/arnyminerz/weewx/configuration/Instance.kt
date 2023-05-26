@@ -46,6 +46,9 @@ class Instance(file: File): Config(file) {
     private val isWeewxRunningMutable: MutableState<Boolean?> = mutableStateOf(null)
     val isWeewxRunning: State<Boolean?> get() = isWeewxRunningMutable
 
+    private val weewxVersionMutable: MutableState<String?> = mutableStateOf(null)
+    val weewxVersion: State<String?> get() = weewxVersionMutable
+
     private val isLoadingMutable: MutableState<Boolean> = mutableStateOf(false)
     val isLoading: State<Boolean> get() = isLoadingMutable
 
@@ -111,47 +114,52 @@ class Instance(file: File): Config(file) {
     }
 
     /**
+     * Uses [client] to run the operations in [block], and updates [isLoadingMutable] accordingly.
+     */
+    private suspend fun <R> performOperation(block: suspend Client.() -> R): R {
+        try {
+            isLoadingMutable.value = true
+            return client.use(block)
+        } finally {
+            isLoadingMutable.value = false
+        }
+    }
+
+    /**
      * Checks whether WeeWX is running in the remote server or not.
      */
     suspend fun updateWeewxStatus() {
-        isLoadingMutable.value = true
         isWeewxRunningMutable.value = null
 
-        val result = client.use { run("sudo systemctl is-active weewx") }
-
-        isWeewxRunningMutable.value = result == "active"
-        isLoadingMutable.value = false
+        performOperation {
+            weewxVersionMutable.value = run("wee_config --version")
+            isWeewxRunningMutable.value = run("sudo systemctl is-active weewx") == "active"
+        }
     }
 
     suspend fun stopWeeWX() {
-        isLoadingMutable.value = true
-        client.use {
+        performOperation {
             run("sudo systemctl stop weewx")
 
             val isActive = run("sudo systemctl is-active weewx")
             isWeewxRunningMutable.value = isActive == "active"
         }
-        isLoadingMutable.value = false
     }
 
     suspend fun startWeeWX() {
-        isLoadingMutable.value = true
-        client.use {
+        performOperation {
             run("sudo systemctl start weewx")
 
             val isActive = run("sudo systemctl is-active weewx")
             isWeewxRunningMutable.value = isActive == "active"
         }
-        isLoadingMutable.value = false
     }
 
     suspend fun repairData(from: Date, to: Date) {
         val formatter = SimpleDateFormat("yyyy-MM-dd")
-        isLoadingMutable.value = true
-        client.use {
+        performOperation {
             run("sudo wee_database --rebuild-daily --from=${formatter.format(from)} --to=${formatter.format(to)}")
             run("sudo wee_database --calc-missing --from=${formatter.format(from)} --to=${formatter.format(to)}")
         }
-        isLoadingMutable.value = false
     }
 }

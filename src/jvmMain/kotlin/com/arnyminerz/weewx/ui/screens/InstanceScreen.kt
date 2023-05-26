@@ -53,6 +53,7 @@ fun ColumnScope.InstanceScreen(
     val databaseFileHash by instance.databaseFileHash
 
     val isWeewxRunning by instance.isWeewxRunning
+    val weewxVersion by instance.weewxVersion
 
     ProgressDialog(progress, "Carregant...")
 
@@ -255,6 +256,11 @@ fun ColumnScope.InstanceScreen(
 
     Text(
         text = "Hash server: ${databaseHash ?: "cap"}\nHash actual: ${databaseFileHash ?: "cap"}",
+        style = MaterialTheme.typography.labelSmall,
+        modifier = Modifier.fillMaxWidth().padding(4.dp)
+    )
+    Text(
+        text = "Versió de WeeWX: ${weewxVersion ?: "Carregant..."}${if (isWeewxRunning == true) " (En execució)" else if (isWeewxRunning == false) " (Detingut)" else ""}",
         style = MaterialTheme.typography.labelSmall,
         modifier = Modifier.fillMaxWidth().padding(4.dp)
     )
