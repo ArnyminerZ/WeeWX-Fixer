@@ -4,6 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.arnyminerz.weewx.data.LongValueMinMax.Companion.INDETERMINATE
+import com.arnyminerz.weewx.data.ServerData
 import com.arnyminerz.weewx.data.ValueMinMax
 import com.arnyminerz.weewx.data.inside
 import com.arnyminerz.weewx.remote.Client
@@ -43,17 +44,11 @@ class Instance(file: File): Config(file) {
 
     val downloadProgress = mutableStateOf<ValueMinMax<Long>?>(null)
 
-    private val isWeewxRunningMutable: MutableState<Boolean?> = mutableStateOf(null)
-    val isWeewxRunning: State<Boolean?> get() = isWeewxRunningMutable
-
-    private val weewxVersionMutable: MutableState<String?> = mutableStateOf(null)
-    val weewxVersion: State<String?> get() = weewxVersionMutable
-
     private val isLoadingMutable: MutableState<Boolean> = mutableStateOf(false)
     val isLoading: State<Boolean> get() = isLoadingMutable
 
-    private val isServerDistroUnsupportedMutable: MutableState<String?> = mutableStateOf(null)
-    val isServerDistroUnsupported: State<String?> get() = isServerDistroUnsupportedMutable
+    private val serverInfoMutable: MutableState<ServerData> = mutableStateOf(ServerData())
+    val serverInfo: State<ServerData> get() = serverInfoMutable
 
     init {
         databaseFile.toPath().watchForChanges {
@@ -129,28 +124,25 @@ class Instance(file: File): Config(file) {
     }
 
     /**
-     * Checks whether WeeWX is running in the remote server or not.
-     */
-    suspend fun updateWeeWXStatus() {
-        isWeewxRunningMutable.value = null
-
-        performOperation {
-            weewxVersionMutable.value = run("wee_config --version")
-            isWeewxRunningMutable.value = run("sudo systemctl is-active weewx") == "active"
-        }
-    }
-
-    /**
-     * Fetches data from the server to check compatibility among other things.
-     * @see isServerDistroUnsupported
+     * Fetches data from the server to check compatibility, as well as information about WeeWX.
+     * @see ServerData.isServerDistroUnsupported
      */
     suspend fun updateServerData() {
         performOperation {
             val osRelease = ReadonlyConfig(run("cat /etc/os-release"))
             val idLike = osRelease["ID_LIKE"] ?: osRelease["ID"]
-            isServerDistroUnsupportedMutable.value = idLike.takeUnless {
-                it.equals("ubuntu", true) || it.equals("debian", true)
-            }
+
+            serverInfoMutable.value = serverInfoMutable.value.copy(
+                isServerDistroUnsupported = idLike.takeUnless {
+                    it.equals("ubuntu", true) || it.equals("debian", true)
+                }
+            )
+            serverInfoMutable.value = serverInfoMutable.value.copy(
+                weeWXVersion = run("wee_config --version")
+            )
+            serverInfoMutable.value = serverInfoMutable.value.copy(
+                isWeeWXRunning = run("sudo systemctl is-active weewx") == "active"
+            )
         }
     }
 
@@ -159,7 +151,9 @@ class Instance(file: File): Config(file) {
             run("sudo systemctl stop weewx")
 
             val isActive = run("sudo systemctl is-active weewx")
-            isWeewxRunningMutable.value = isActive == "active"
+            serverInfoMutable.value = serverInfoMutable.value.copy(
+               isWeeWXRunning = isActive == "active"
+            )
         }
     }
 
@@ -168,7 +162,9 @@ class Instance(file: File): Config(file) {
             run("sudo systemctl start weewx")
 
             val isActive = run("sudo systemctl is-active weewx")
-            isWeewxRunningMutable.value = isActive == "active"
+            serverInfoMutable.value = serverInfoMutable.value.copy(
+                isWeeWXRunning = isActive == "active"
+            )
         }
     }
 
