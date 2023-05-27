@@ -50,6 +50,8 @@ class Instance(file: File): Config(file) {
     private val serverInfoMutable: MutableState<ServerData> = mutableStateOf(ServerData())
     val serverInfo: State<ServerData> get() = serverInfoMutable
 
+    val error: MutableState<String?> = mutableStateOf(null)
+
     init {
         databaseFile.toPath().watchForChanges {
             println("Database ($databaseFile) updated! Refreshing checksum...")
@@ -81,6 +83,8 @@ class Instance(file: File): Config(file) {
 
             downloadProgress.value = null
             println("Database downloaded.")
+        } catch (e: Exception) {
+            error.value = "No s'ha pogut descarregar. Error: ${e.message}"
         } finally {
             isLoadingMutable.value = false
         }
@@ -106,6 +110,8 @@ class Instance(file: File): Config(file) {
 
             downloadProgress.value = null
             println("Database uploaded.")
+        } catch (e: Exception) {
+            error.value = "No s'ha pogut carregar. Error: ${e.message}"
         } finally {
             isLoadingMutable.value = false
         }
@@ -114,14 +120,16 @@ class Instance(file: File): Config(file) {
     /**
      * Uses [client] to run the operations in [block], and updates [isLoadingMutable] accordingly.
      */
-    private suspend fun <R> performOperation(block: suspend Client.() -> R): R {
+    private suspend fun <R> performOperation(block: suspend Client.() -> R): R? =
         try {
             isLoadingMutable.value = true
-            return client.use(block)
-        } finally {
+            client.use(block)
+        } catch (e: Exception) {
+            error.value = e.message
+            null
+        }  finally {
             isLoadingMutable.value = false
         }
-    }
 
     /**
      * Fetches data from the server to check compatibility, as well as information about WeeWX.

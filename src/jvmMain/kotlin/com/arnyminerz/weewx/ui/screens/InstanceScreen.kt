@@ -25,6 +25,8 @@ import com.arnyminerz.weewx.updates.UpdateChecker
 import com.arnyminerz.weewx.updates.WeeWX
 import com.arnyminerz.weewx.utils.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -40,6 +42,7 @@ fun ColumnScope.InstanceScreen(
 ) {
     val scope = rememberCoroutineScope()
 
+    val error by instance.error
     val progress by instance.downloadProgress
     val isInstanceLoading by instance.isLoading
 
@@ -59,6 +62,16 @@ fun ColumnScope.InstanceScreen(
 
     serverInfo.isServerDistroUnsupported?.let {
         UnsupportedDistroDialog(it, onCloseRequested)
+    }
+
+    LaunchedEffect(error) {
+        snapshotFlow { error }
+            .distinctUntilChanged()
+            .filterNotNull()
+            .collect { message ->
+                snackbarHostState.showSnackbar(message, duration = SnackbarDuration.Long)
+                instance.error.value = null
+            }
     }
 
     if (serverInfo.isEmpty) {
