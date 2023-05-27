@@ -3,14 +3,10 @@ package com.arnyminerz.weewx.data
 import com.arnyminerz.weewx.utils.map
 
 abstract class ValueMinMax<T : Number>(
-    val value: T,
-    val min: T,
-    val max: T
+    open val value: T,
+    open val min: T,
+    open val max: T
 ) {
-    init {
-        if (min compareTo max > 0) throw IllegalArgumentException("min ($min) cannot be greater than max ($max)")
-    }
-
     /** The neutral value for the current number type. Usually simply 0 */
     protected abstract val neutral: T
 
@@ -25,13 +21,17 @@ abstract class ValueMinMax<T : Number>(
     val percentString: String get() = "$percent % ($value / $max)"
 }
 
-class LongValueMinMax(
+open class LongValueMinMax(
     value: Long,
     min: Long,
     max: Long
 ) : ValueMinMax<Long>(value, min, max) {
     companion object {
         val INDETERMINATE = 0L inside (0..0L)
+    }
+
+    init {
+        if (min compareTo max > 0) throw IllegalArgumentException("min ($min) cannot be greater than max ($max)")
     }
 
     override fun Long.compareTo(b: Long): Int = compareTo(b)

@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.arnyminerz.weewx.configuration.Instance
+import com.arnyminerz.weewx.ui.dialog.NewWeeWXVersionAvailableDialog
 import com.arnyminerz.weewx.ui.dialog.ProgressDialog
 import com.arnyminerz.weewx.ui.dialog.UnsupportedDistroDialog
 import com.arnyminerz.weewx.updates.UpdateChecker
@@ -43,8 +44,8 @@ fun ColumnScope.InstanceScreen(
     val scope = rememberCoroutineScope()
 
     val error by instance.error
-    val progress by instance.downloadProgress
-    val isInstanceLoading by instance.isLoading
+    val progress by instance.taskProgress
+    val isInstanceLoading = progress != null
 
     val databaseExists by instance.databaseExists
     val databaseHash by instance.databaseHash
@@ -52,6 +53,7 @@ fun ColumnScope.InstanceScreen(
 
     val serverInfo by instance.serverInfo
 
+    val newVersionAvailable by UpdateChecker.newVersionAvailable
     val latestWeeWXRelease by WeeWX.latestRelease
 
     ProgressDialog(progress, "Carregant...")
@@ -79,6 +81,15 @@ fun ColumnScope.InstanceScreen(
             CircularProgressIndicator()
         }
         return
+    }
+
+    var shouldDisplayNewWeeWXVersionDialog by remember { mutableStateOf(true) }
+    if (newVersionAvailable != null && shouldDisplayNewWeeWXVersionDialog) {
+        NewWeeWXVersionAvailableDialog(
+            currentVersion = serverInfo.weeWXVersion ?: ".",
+            latestVersion = latestWeeWXRelease?.version?.value ?: ".",
+            { shouldDisplayNewWeeWXVersionDialog = false }
+        ) { doAsync { instance.upgradeWeeWX() } }
     }
 
     Column(
@@ -295,7 +306,6 @@ fun ColumnScope.InstanceScreen(
             false -> " - Detingut"
             else -> ""
         }
-        val newVersionAvailable by UpdateChecker.newVersionAvailable
         val newVersionAvailableString = when(newVersionAvailable) {
             null -> ""
             else -> " (Nova versió disponible)"

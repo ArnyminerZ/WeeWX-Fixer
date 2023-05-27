@@ -3,10 +3,9 @@ package com.arnyminerz.weewx.configuration
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import com.arnyminerz.weewx.data.LongValueMinMax.Companion.INDETERMINATE
+import com.arnyminerz.weewx.data.Progress
 import com.arnyminerz.weewx.data.ServerData
-import com.arnyminerz.weewx.data.ValueMinMax
-import com.arnyminerz.weewx.data.inside
+import com.arnyminerz.weewx.data.progress
 import com.arnyminerz.weewx.remote.Client
 import com.arnyminerz.weewx.utils.checksum
 import com.arnyminerz.weewx.utils.watchForChanges
@@ -42,10 +41,7 @@ class Instance(file: File): Config(file) {
     private val databaseHashMutable: MutableState<String?> = mutableStateOf(checksumFile.takeIf { it.exists() }?.readText())
     val databaseHash: State<String?> get() = databaseHashMutable
 
-    val downloadProgress = mutableStateOf<ValueMinMax<Long>?>(null)
-
-    private val isLoadingMutable: MutableState<Boolean> = mutableStateOf(false)
-    val isLoading: State<Boolean> get() = isLoadingMutable
+    val taskProgress = mutableStateOf<Progress?>(null)
 
     private val serverInfoMutable: MutableState<ServerData> = mutableStateOf(ServerData())
     val serverInfo: State<ServerData> get() = serverInfoMutable
@@ -63,72 +59,67 @@ class Instance(file: File): Config(file) {
 
     suspend fun downloadDatabase() {
         try {
-            isLoadingMutable.value = true
-
             if (databaseFile.exists()) databaseFile.delete()
 
             println("Downloading database for $name into $databaseFile")
-            downloadProgress.value = INDETERMINATE // Set progress to indeterminate
+            taskProgress.value = Progress.INDETERMINATE // Set progress to indeterminate
             client.use {
                 download(remoteDatabaseFilePath, databaseFile) { progress ->
-                    downloadProgress.value = progress
+                    taskProgress.value = progress?.progress
                     true
                 }
             }
 
             println("Storing checksum for database...")
-            downloadProgress.value = INDETERMINATE // Set progress to indeterminate
+            taskProgress.value = Progress.INDETERMINATE // Set progress to indeterminate
             if (checksumFile.exists()) checksumFile.delete()
             if (databaseFile.exists()) checksumFile.writeText(databaseFile.checksum()!!)
 
-            downloadProgress.value = null
             println("Database downloaded.")
         } catch (e: Exception) {
             error.value = "No s'ha pogut descarregar. Error: ${e.message}"
         } finally {
-            isLoadingMutable.value = false
+            taskProgress.value = null
         }
     }
 
     suspend fun uploadDatabase() {
         try {
-            isLoadingMutable.value = true
-
             println("Uploading database for $name into $remoteDatabaseFilePath")
-            downloadProgress.value = 0L inside (0..0L) // Set progress to indeterminate
+            taskProgress.value = Progress.INDETERMINATE // Set progress to indeterminate
             client.use {
                 upload(databaseFile, remoteDatabaseFilePath) { progress ->
-                    downloadProgress.value = progress
+                    taskProgress.value = progress?.progress
                     true
                 }
             }
 
             println("Storing checksum for database...")
-            downloadProgress.value = INDETERMINATE // Set progress to indeterminate
+            taskProgress.value = Progress.INDETERMINATE // Set progress to indeterminate
             if (checksumFile.exists()) checksumFile.delete()
             if (databaseFile.exists()) checksumFile.writeText(databaseFile.checksum()!!)
 
-            downloadProgress.value = null
+            taskProgress.value = null
             println("Database uploaded.")
         } catch (e: Exception) {
             error.value = "No s'ha pogut carregar. Error: ${e.message}"
         } finally {
-            isLoadingMutable.value = false
+            taskProgress.value = null
         }
     }
 
     /**
-     * Uses [client] to run the operations in [block], and updates [isLoadingMutable] accordingly.
+     * Uses [client] to run the operations in [block], and updates [taskProgress] accordingly.
      */
     private suspend fun <R> performOperation(block: suspend Client.() -> R): R? =
         try {
-            isLoadingMutable.value = true
+            taskProgress.value = Progress.INDETERMINATE
             client.use(block)
         } catch (e: Exception) {
             error.value = e.message
             null
         }  finally {
-            isLoadingMutable.value = false
+            taskProgress.value = null
         }
 
     /**
@@ -181,6 +172,19 @@ class Instance(file: File): Config(file) {
         performOperation {
             run("sudo wee_database --rebuild-daily --from=${formatter.format(from)} --to=${formatter.format(to)}")
             run("sudo wee_database --calc-missing --from=${formatter.format(from)} --to=${formatter.format(to)}")
+        }
+    }
+
+    suspend fun upgradeWeeWX() {
+        performOperation {
+            taskProgress.value = Progress.INDETERMINATE("Actualitzant repos")
+            run("sudo apt-get update -y")
+            taskProgress.value = Progress.INDETERMINATE("Parant WeeWX")
+            run("sudo systemctl stop weewx")
+            taskProgress.value = Progress.INDETERMINATE("Actualitzant WeeWX")
+            run("sudo apt-get install weewx -y")
+            taskProgress.value = Progress.INDETERMINATE("Arrancant WeeWX")
+            run("sudo systemctl start weewx")
         }
     }
 }
