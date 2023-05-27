@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.arnyminerz.weewx.configuration.Instance
 import com.arnyminerz.weewx.ui.dialog.ProgressDialog
 import com.arnyminerz.weewx.ui.dialog.UnsupportedDistroDialog
+import com.arnyminerz.weewx.updates.UpdateChecker
 import com.arnyminerz.weewx.updates.WeeWX
 import com.arnyminerz.weewx.utils.*
 import kotlinx.coroutines.Dispatchers
@@ -265,24 +266,35 @@ fun ColumnScope.InstanceScreen(
         style = MaterialTheme.typography.labelSmall,
         modifier = Modifier.fillMaxWidth().padding(4.dp)
     )
-    val latestReleaseStr = latestWeeWXRelease?.version?.let { latest ->
-        val current = serverInfo.weeWXVersion?.semVer
-        if (current != null)
-            if (latest > current)
-                " (Nova versió disponible)"
+    Row(Modifier.fillMaxWidth().padding(4.dp)) {
+        val latestReleaseStr = latestWeeWXRelease?.version?.let { latest ->
+            val current = serverInfo.weeWXVersion?.semVer
+            if (current != null)
+                if (latest > current)
+                    " (Nova versió disponible)"
+                else
+                    " (Actualizada)"
             else
-                " (Actualizada)"
-        else
-            ""
+                ""
+        }
+        val weewxRunningString = when (serverInfo.isWeeWXRunning) {
+            true -> " - En execució"
+            false -> " - Detingut"
+            else -> ""
+        }
+        val newVersionAvailable by UpdateChecker.newVersionAvailable
+        val newVersionAvailableString = when(newVersionAvailable) {
+            null -> ""
+            else -> " (Nova versió disponible)"
+        }
+        Text(
+            text = "Versió de WeeWX: ${serverInfo.weeWXVersion ?: "Carregant..."}${latestReleaseStr}${weewxRunningString}",
+            style = MaterialTheme.typography.labelSmall,
+            modifier = Modifier.weight(1f)
+        )
+        Text(
+            text = "Versió de WeeWX-Fixer: ${UpdateChecker.appVersion()}${newVersionAvailableString}",
+            style = MaterialTheme.typography.labelSmall
+        )
     }
-    val weewxRunningString = when (serverInfo.isWeeWXRunning) {
-        true -> " - En execució"
-        false -> " - Detingut"
-        else -> ""
-    }
-    Text(
-        text = "Versió de WeeWX: ${serverInfo.weeWXVersion ?: "Carregant..."}${latestReleaseStr}${weewxRunningString}",
-        style = MaterialTheme.typography.labelSmall,
-        modifier = Modifier.fillMaxWidth().padding(4.dp)
-    )
 }

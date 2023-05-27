@@ -1,9 +1,9 @@
 package com.arnyminerz.weewx.updates
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.arnyminerz.weewx.utils.semVer
+import com.vdurmont.semver4j.Semver
 import org.json.JSONObject
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
@@ -13,6 +13,13 @@ object UpdateChecker {
 
     private val newVersionAvailableMutable = mutableStateOf<GithubLatestRelease?>(null)
     val newVersionAvailable: State<GithubLatestRelease?> get() = newVersionAvailableMutable
+
+    /**
+     * Returns the version of the app currently installed.
+     */
+    fun appVersion(): Semver {
+        return System.getProperty("jpackage.app-version").semVer
+    }
 
     suspend fun checkForUpdates() {
         val version = System.getProperty("jpackage.app-version").semVer
