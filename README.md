@@ -12,3 +12,15 @@ With WeeWX Fixer, users can establish a connection to the remote database, downl
 By analyzing the data and implementing the necessary fixes, users can ensure the accuracy and integrity of the weather data stored in the WeeWX database. The application streamlines the process of identifying and resolving data corruption issues, allowing users to maintain the quality of their weather station records.
 
 Overall, WeeWX Fixer provides a practical solution for users of the WeeWX software who want to manually address any data corruption in their remote database, enabling them to have reliable and accurate weather information at their fingertips.
+
+# Instance files
+Here is an example of an instance file. Properties surrounded by `<>` are optional.
+
+```properties
+hostname=instance-server-hostname
+username=ssh-username
+password=ssh-password
+port=ssh-port :: 22
+database=/var/lib/weewx/weewx.sdb -- for example
+<display-name>=A friendly name for the instance
+```

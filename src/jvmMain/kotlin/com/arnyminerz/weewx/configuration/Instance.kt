@@ -24,6 +24,8 @@ class Instance(file: File): Config(file) {
         )
     }
 
+    override val name: String get() = get("display-name", super.name)
+
     private val remoteDatabaseFilePath = getValue("database")
 
     private val instanceDirectory: File get() = file.parentFile

@@ -11,7 +11,7 @@ open class Config(
         load()
     }
 
-    val name: String get() = file.nameWithoutExtension
+    open val name: String get() = file.nameWithoutExtension
 
     override fun toString(): String = file.absolutePath
 
