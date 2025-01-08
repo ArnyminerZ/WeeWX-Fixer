@@ -33,7 +33,7 @@ kotlin {
                 implementation(compose.materialIconsExtended)
                 implementation("com.jcraft:jsch:0.1.55")
                 implementation("com.darkrockstudios:mpfilepicker:3.1.0")
-                implementation("org.json:json:20241224")
+                implementation("org.json:json:20250107")
                 implementation("com.vdurmont:semver4j:3.1.0")
                 implementation("org.jsoup:jsoup:1.18.3")
             }
