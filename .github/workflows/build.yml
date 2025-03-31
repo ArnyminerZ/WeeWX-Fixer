@@ -107,7 +107,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: ffurrer2/extract-release-notes@v2.2.0
+      - uses: ffurrer2/extract-release-notes@v2.3.0
         id: extract_release_notes
         if: ${{ false }}
 
