@@ -46,7 +46,7 @@ jobs:
 
     steps:
       - name: Check out the source code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up OpenJDK ${{ matrix.jdk }}
         id: setup-java
@@ -103,7 +103,7 @@ jobs:
 
     steps:
       - name: Check out the source code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
