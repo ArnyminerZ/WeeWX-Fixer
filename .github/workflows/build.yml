@@ -79,7 +79,7 @@ jobs:
 
       - name: Uploading ${{ matrix.os }} uber jar
         if: steps.gradle-build.outcome == 'success'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ matrix.os }}-jar
           path: ./build/compose/jars/*.jar
@@ -87,7 +87,7 @@ jobs:
 
       - name: Uploading ${{ matrix.os }} native package
         if: steps.gradle-build.outcome == 'success'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ matrix.os }}-package
           path: ./build/compose/binaries/main/**/*
